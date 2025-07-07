@@ -8,14 +8,14 @@
 <p>Desde aquí puedes gestionar tus activos.</p>
 
 <button class="btn btn-primary" @onclick="ShowAssets">Ver Activos</button>
-<button class="btn btn-primary" @onclick="ShowIncidents">Ver Activos</button>
+<button class="btn btn-primary" @onclick="ShowIncidents">Ver Incidentes</button>
 @if (showAssets)
 {
-    <Asset />
+    <Assets />
 }
 @if (showIncidents)
 {
-    <Incident />
+    <Incident /> 
 }
 
 @code {
