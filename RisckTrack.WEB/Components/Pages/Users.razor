@@ -3,6 +3,42 @@
 @inject UserService UserService
 
 <h3>Users</h3>
+
+<button class="btn btn-success mb-3" @onclick="ToggleCreateUserForm">
+    @(showCreateForm ? "Cancelar" : "Crear Usuario")
+</button>
+
+@if (showCreateForm)
+{
+    <EditForm Model="newUser" OnValidSubmit="CreateUser">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label>ID Compañía:</label>
+            <InputNumber class="form-control" @bind-Value="newUser.CompanyId" />
+        </div>
+        <div class="mb-2">
+            <label>Usuario:</label>
+            <InputText class="form-control" @bind-Value="newUser.Username" />
+        </div>
+        <div class="mb-2">
+            <label>Email:</label>
+            <InputText class="form-control" @bind-Value="newUser.Email" />
+        </div>
+        <div class="mb-2">
+            <label>Contraseña:</label>
+            <InputText class="form-control" type="password" @bind-Value="newUser.Password" />
+        </div>
+        <div class="mb-2">
+            <label>Rol:</label>
+            <InputText class="form-control" @bind-Value="newUser.Role" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </EditForm>
+}
+
 @if (users == null)
 {
     <p>Cargando usuarios...</p>
@@ -39,16 +75,39 @@ else
 
 @code {
     private List<UserDto>? users;
+    private bool showCreateForm = false;
+    private UserDto newUser = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
         users = await UserService.GetUsersAsync();
+    }
+
+    private void ToggleCreateUserForm()
+    {
+        showCreateForm = !showCreateForm;
+        newUser = new(); // Reset form
+    }
+
+    private async Task CreateUser()
+    {
+        var success = await UserService.CreateUserAsync(newUser);
+        if (success)
+        {
+            await LoadUsers();
+            ToggleCreateUserForm();
+        }
     }
 
     private async Task DeleteUser(int id)
     {
         await UserService.DeleteUserAsync(id);
-        users = await UserService.GetUsersAsync();
+        await LoadUsers();
     }
 
 }
