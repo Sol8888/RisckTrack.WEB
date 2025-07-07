@@ -1,0 +1,196 @@
+﻿@using RisckTrack.WEB.Models
+@using RisckTrack.WEB.Services
+@inject AssetService AssetService
+@inject UserSessionService Session
+
+<h3>Asset</h3>
+<h3>Gestión de Activos</h3>
+
+<EditForm Model="newAsset" OnValidSubmit="CreateAsset">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Nombre del Activo:</label>
+        <InputText class="form-control" @bind-Value="newAsset.Name" />
+    </div>
+
+    <div class="mb-2">
+        <label>Tipo de Activo:</label>
+
+        @foreach (var group in assetTypeGroups)
+        {
+            <div>
+                <button type="button" class="btn btn-link p-0" @onclick="() => ToggleGroup(group.Name)">
+                    @(expandedGroups.Contains(group.Name) ? "▼" : "▶") @group.Name
+                </button>
+
+                @if (expandedGroups.Contains(group.Name))
+                {
+                    <ul class="list-group">
+                        @foreach (var subtype in group.Subtypes)
+                        {
+                            <li class="list-group-item list-group-item-action"
+                                style="cursor:pointer"
+                                @onclick="() => SelectAssetType(subtype)">
+                                @subtype.Name
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+
+        @if (selectedAssetType is not null)
+        {
+            <p class="mt-2 text-muted">Seleccionado: <strong>@selectedAssetType.Name</strong> (ID: @newAsset.AssetTypeId)</p>
+        }
+    </div>
+
+    <button class="btn btn-primary" type="submit" disabled="@(!newAsset.AssetTypeId.HasValue)">Crear Activo</button>
+</EditForm>
+
+@if (assets == null)
+{
+    <p>Cargando activos...</p>
+}
+else if (assets.Count == 0)
+{
+    <p>No hay activos registrados.</p>
+}
+else
+{
+    <h5 class="mt-4">Lista de Activos</h5>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Nombre</th>
+                <th>Tipo ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var asset in assets)
+            {
+                <tr>
+                    <td>@asset.AssetId</td>
+                    <td>@asset.Name</td>
+                    <td>@asset.AssetTypeId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private AssetDto newAsset = new();
+    private List<AssetDto>? assets;
+
+    private AssetTypeGroup? selectedGroup;
+    private AssetTypeSubtype? selectedAssetType;
+
+    private HashSet<string> expandedGroups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        newAsset.CompanyId = Session.CompanyId;
+        await LoadAssets();
+    }
+
+    private async Task LoadAssets()
+    {
+        assets = await AssetService.GetAssetsAsync();
+    }
+
+    private async Task CreateAsset()
+    {
+        newAsset.AssetId = Guid.NewGuid().ToString();
+        newAsset.CompanyId = Session.CompanyId;
+        await AssetService.CreateAssetAsync(newAsset);
+        newAsset = new() { CompanyId = Session.CompanyId };
+        selectedAssetType = null;
+    }
+
+    private void ToggleGroup(string groupName)
+    {
+        if (expandedGroups.Contains(groupName))
+            expandedGroups.Remove(groupName);
+        else
+            expandedGroups.Add(groupName);
+    }
+
+    private void SelectAssetType(AssetTypeSubtype type)
+    {
+        selectedAssetType = type;
+        newAsset.AssetTypeId = type.Id;
+    }
+
+    public record AssetTypeGroup(string Name, AssetTypeSubtype[] Subtypes);
+    public record AssetTypeSubtype(int Id, string Name);
+
+    private List<AssetTypeGroup> assetTypeGroups = new()
+    {
+        new("Activos de datos / información", new[] {
+            new AssetTypeSubtype(1, "Bases de datos (clientes, empleados, financieros)"),
+            new AssetTypeSubtype(2, "Archivos y documentos confidenciales"),
+            new AssetTypeSubtype(3, "Propiedad intelectual (códigos fuente, diseños)"),
+            new AssetTypeSubtype(4, "Registros de logs y auditoría"),
+            new AssetTypeSubtype(5, "Copias de respaldo (backups)")
+    }),
+        new("Activos de software", new[] {
+            new AssetTypeSubtype(6, "Sistemas operativos"),
+            new AssetTypeSubtype(7, "Aplicaciones empresariales (ERP, CRM)"),
+            new AssetTypeSubtype(8, "Aplicaciones web"),
+            new AssetTypeSubtype(9, "Código fuente"),
+            new AssetTypeSubtype(10, "Servicios en la nube (SaaS, PaaS)")
+    }),
+        new("Activos de hardware / infraestructura", new[] {
+            new AssetTypeSubtype(11, "Servidores físicos"),
+            new AssetTypeSubtype(12, "Computadoras personales y portátiles"),
+            new AssetTypeSubtype(13, "Dispositivos móviles"),
+            new AssetTypeSubtype(14, "Dispositivos de red (switches, routers, firewalls)"),
+            new AssetTypeSubtype(15, "Sistemas de almacenamiento (SAN, NAS)")
+    }),
+        new("Activos de red", new[] {
+            new AssetTypeSubtype(16, "Direcciones IP"),
+            new AssetTypeSubtype(17, "Dominios"),
+            new AssetTypeSubtype(18, "Subredes internas"),
+            new AssetTypeSubtype(19, "VPNs"),
+            new AssetTypeSubtype(20, "Enlaces dedicados")
+    }),
+        new("Activos en la nube", new[] {
+            new AssetTypeSubtype(21, "Instancias de máquinas virtuales"),
+            new AssetTypeSubtype(22, "Almacenamiento en la nube (buckets S3, Azure Blob)"),
+            new AssetTypeSubtype(23, "Contenedores (Docker, Kubernetes)"),
+            new AssetTypeSubtype(24, "Funciones serverless"),
+            new AssetTypeSubtype(25, "Configuraciones de servicios en la nube")
+    }),
+        new("Activos de identidad y acceso", new[] {
+            new AssetTypeSubtype(26, "Cuentas de usuario"),
+            new AssetTypeSubtype(27, "Credenciales (contraseñas, claves API)"),
+            new AssetTypeSubtype(28, "Certificados digitales"),
+            new AssetTypeSubtype(29, "Tokens de acceso"),
+            new AssetTypeSubtype(30, "Grupos y roles de permisos")
+    }),
+        new("Activos de comunicaciones", new[] {
+            new AssetTypeSubtype(31, "Correos electrónicos"),
+            new AssetTypeSubtype(32, "Plataformas de mensajería (Teams, Slack)"),
+            new AssetTypeSubtype(33, "Canales de voz y videollamadas"),
+            new AssetTypeSubtype(34, "Servidores de correo")
+    }),
+        new("Activos de monitoreo y seguridad", new[] {
+            new AssetTypeSubtype(35, "Sistemas de detección de intrusos (IDS/IPS)"),
+            new AssetTypeSubtype(36, "SIEM (Security Information and Event Management)"),
+            new AssetTypeSubtype(37, "Firewalls (físicos y virtuales)"),
+            new AssetTypeSubtype(38, "Endpoint protection (antivirus, EDR)"),
+            new AssetTypeSubtype(39, "Herramientas de escaneo de vulnerabilidades")
+    }),
+        new("Activos de documentación y conocimiento", new[] {
+            new AssetTypeSubtype(40, "Manuales técnicos"),
+            new AssetTypeSubtype(41, "Procedimientos y políticas de seguridad"),
+            new AssetTypeSubtype(42, "Diagramas de arquitectura"),
+            new AssetTypeSubtype(43, "Planes de respuesta a incidentes"),
+            new AssetTypeSubtype(44, "Documentación de cumplimiento normativo")
+    })
+    };
+}
