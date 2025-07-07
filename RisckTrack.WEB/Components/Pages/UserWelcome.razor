@@ -1,33 +1,38 @@
 ﻿@page "/user-welcome"
 @rendermode InteractiveServer
 
-<h3>UserWelcome</h3>
+<div class="user-wrapper">
+    <div class="user-card">
+        <h1 class="hero-title">¡Bienvenido Usuario!</h1>
+        <p class="hero-subtitle">Desde aquí puedes gestionar tus activos, incidentes y soluciones.</p>
 
-<h3>Bienvenido Usuario</h3>
+        <div class="button-group">
+            <button class="cta-button green-button" @onclick="ShowTeams">Ver Grupos</button>
+            <button class="cta-button green-button" @onclick="ShowAssets">Ver Activos</button>
+            <button class="cta-button green-button" @onclick="ShowIncidents">Ver Incidentes</button>
+            <button class="cta-button green-button" @onclick="ShowTreatment">Ver Soluciones</button>
+        </div>
 
-<p>Desde aquí puedes gestionar tus activos.</p>
-
-<button class="btn btn-primary" @onclick="ShowTeams">Ver Grupos</button>
-<button class="btn btn-primary" @onclick="ShowAssets">Ver Activos</button>
-<button class="btn btn-primary" @onclick="ShowIncidents">Ver Incidentes</button>
-<button class="btn btn-primary" @onclick="ShowTreatment">Ver Soluciones</button>
-
-@if (showAssets)
-{
-    <Assets />
-}
-@if (showIncidents)
-{
-    <Incidents /> 
-}
-@if (showTeams)
-{
-    <Teams />
-}
-@if (showTreatment)
-{
-    <Treatment />
-}
+        <div class="section-card">
+            @if (showAssets)
+            {
+                <Assets />
+            }
+            @if (showIncidents)
+            {
+                <Incidents />
+            }
+            @if (showTeams)
+            {
+                <Teams />
+            }
+            @if (showTreatment)
+            {
+                <Treatment />
+            }
+        </div>
+    </div>
+</div>
 
 
 @code {

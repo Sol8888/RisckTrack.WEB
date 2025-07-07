@@ -7,28 +7,33 @@
 @inject AuthService AuthService
 @rendermode InteractiveServer
 
-<h3>Login</h3>
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2 class="login-title">Iniciar Sesión</h2>
 
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <div>
-        <label>Email:</label>
-        <InputText @bind-Value="loginModel.Email" />
+            <div class="form-group">
+                <label>Email:</label>
+                <InputText class="form-control" @bind-Value="loginModel.Email" placeholder="usuario@correo.com" />
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña:</label>
+                <InputText class="form-control" @bind-Value="loginModel.Password" type="password" placeholder="••••••••" />
+            </div>
+
+            <button type="submit" class="login-button">Ingresar</button>
+
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <p class="login-message">@Message</p>
+            }
+        </EditForm>
     </div>
-    <div>
-        <label>Password:</label>
-        <InputText @bind-Value="loginModel.Password" type="password" />
-    </div>
-
-    <button type="submit">Login</button>
-
-    @if (!string.IsNullOrEmpty(Message))
-    {
-        <p>@Message</p>
-    }
-</EditForm>
+</div>
 
 @code {
     private UserLoginDto loginModel = new();

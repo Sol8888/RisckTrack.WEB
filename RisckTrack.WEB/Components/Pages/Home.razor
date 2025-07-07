@@ -1,40 +1,82 @@
 ﻿@page "/"
-<PageTitle>Home</PageTitle>
+<PageTitle>Metodología de Riesgo de Activos Digitales</PageTitle>
 
 <div class="page-container">
-    <div class="hero">
-        <div class="hero-left">
-            <img src="portada.png" alt="Imagen portada" />
-        </div>
-        <div class="hero-right">
-            <h1>Riesgo de Activos Digitales</h1>
-            <p class="subtitle">
-                Descubre qué tan valioso y vulnerable es tu activo digital.
-                Evalúa, cuantifica y prioriza con base en impacto real.
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Cuantificación del Riesgo de Activos Digitales</h1>
+            <p class="hero-subtitle">
+                Transformando la ciberseguridad en decisiones de negocio: evalúa, cuantifica y prioriza el riesgo con impacto financiero real.
             </p>
-            <a class="cta-button" href="#">Ver Metodología</a>
+            <a class="cta-button" href="#metodologia-resumen">Explorar Metodología</a>
         </div>
-    </div>
+        <div class="hero-image-container">
+            <img src="portada.png" alt="Representación visual de la ciberseguridad y activos digitales" class="hero-image" />
+        </div>
+    </header>
 
-    <div class="info-card">
-        <h2>¿En qué consiste?</h2>
-        <p>
-            Esta metodología permite cuantificar el <strong>riesgo de ciberseguridad</strong> en términos financieros. Evalúa el valor de un activo, su fragilidad técnica y el posible impacto económico de un incidente.
+    <section class="section-card overview-section" id="metodologia-resumen">
+        <h2 class="section-title">¿En qué consiste esta Metodología?</h2>
+        <p class="section-description">
+            Esta metodología innovadora permite <strong>cuantificar el riesgo de ciberseguridad en términos financieros (USD)</strong> para los activos digitales de una organización. El resultado principal es un valor de Pérdida Anual Esperada (ALE) por cada activo, lo que facilita una gestión de riesgos objetiva y estratégica. Al traducir el riesgo a un lenguaje monetario, las empresas pueden tomar decisiones informadas, justificar inversiones en seguridad y alinear la ciberseguridad con los objetivos de negocio generales.
         </p>
-    </div>
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <h3>Priorización Objetiva</h3>
+                <p>Clasifica activos y riesgos según su impacto económico real, no percepciones subjetivas[cite: 344].</p>
+            </div>
+            <div class="benefit-item">
+                <h3>Justificación de Inversiones</h3>
+                <p>Demuestra el Retorno de la Inversión en Seguridad (ROSI) de los controles propuestos, convirtiendo el gasto en una inversión rentable[cite: 348].</p>
+            </div>
+            <div class="benefit-item">
+                <h3>Toma de Decisiones Estratégica</h3>
+                <p>Provee métricas de riesgo comparables con otros riesgos del negocio (financieros, operacionales) para la alta dirección[cite: 349, 350].</p>
+            </div>
+            <div class="benefit-item">
+                <h3>Automatización y Eficiencia</h3>
+                <p>Integra la medición de riesgos en flujos de trabajo de CI/CD y operaciones de TI, optimizando la gestión[cite: 351].</p>
+            </div>
+        </div>
+    </section>
 
-    <div class="info-card">
-        <h2>Pilares de la metodología</h2>
-        <ul>
-            <li><strong>Identificación:</strong> inventario automático de activos digitales.</li>
-            <li><strong>Valoración Financiera (VNA):</strong> costo de reposición + valor de negocio.</li>
-            <li><strong>Sensibilidad (SI):</strong> qué tan frágil es el activo (C-I-D).</li>
-            <li><strong>Riesgo (ALE):</strong> pérdida esperada anual.</li>
-            <li><strong>Retorno (ROSI):</strong> rentabilidad de invertir en seguridad.</li>
-        </ul>
-    </div>
+    <section class="section-card key-pillars-section">
+        <h2 class="section-title">Pilares Fundamentales de la Metodología</h2>
+        <div class="pillars-grid">
+            <div class="pillar-item">
+                <span class="pillar-icon">📊</span>
+                <h3>Identificación y Clasificación de Activos</h3>
+                <p>Proceso automatizado para crear un inventario completo y contextualizado de todos los activos digitales (software, datos, infraestructura)[cite: 421, 422].</p>
+            </div>
+            <div class="pillar-item">
+                <span class="pillar-icon">💰</span>
+                <h3>Valoración Financiera del Activo (VNA)</h3>
+                <p>Cuantifica el valor estratégico total de un activo en USD, combinando el costo de reposición y su valor de negocio[cite: 468, 469].</p>
+            </div>
+            <div class="pillar-item">
+                <span class="pillar-icon">💔</span>
+                <h3>Medición de la Sensibilidad (SI)</h3>
+                <p>Índice de "fragilidad" del activo basado en su estado técnico actual, midiendo su propensión a fallar (Confidencialidad, Integridad, Disponibilidad)[cite: 501, 556].</p>
+            </div>
+            <div class="pillar-item">
+                <span class="pillar-icon">📉</span>
+                <h3>Análisis de Frecuencia y Magnitud de Pérdida</h3>
+                <p>Determina la Frecuencia de Evento de Pérdida (LEF) y la Magnitud de Pérdida (LM) de un incidente[cite: 528, 539].</p>
+            </div>
+            <div class="pillar-item">
+                <span class="pillar-icon">📈</span>
+                <h3>Cuantificación del Riesgo (ALE)</h3>
+                <p>Calcula la Pérdida Anual Esperada, el costo total anual por incidentes de seguridad, siendo el principal indicador de riesgo[cite: 548, 553, 554].</p>
+            </div>
+            <div class="pillar-item">
+                <span class="pillar-icon">✅</span>
+                <h3>Retorno de la Inversión en Seguridad (ROSI)</h3>
+                <p>Métrica financiera que evalúa la rentabilidad de una inversión en seguridad, justificando presupuestos y priorizando iniciativas[cite: 558, 559].</p>
+            </div>
+        </div>
+    </section>
 
     <footer class="footer">
-        Realizado por Yuliana Capito, Soledad Cabrera y Chrystel Velasco – UDLA
+        <p>Realizado por: Yuliana Capito, Soledad Cabrera y Crhystel Velasco – Universidad de las Américas</p>
     </footer>
 </div>

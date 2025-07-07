@@ -4,21 +4,29 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
-<h3>Bienvenido, Administrador</h3>
+<div class="admin-wrapper">
+    <div class="admin-card">
+        <h1 class="hero-title">Bienvenido, Administrador</h1>
+        <p class="hero-subtitle">Tienes acceso completo al sistema. Desde aquí puedes gestionar usuarios y compañías.</p>
 
-<p>Acceso completo al sistema.</p>
+        <div class="button-group">
+            <button class="cta-button green-button" @onclick="ShowUsers">Ver Usuarios</button>
+            <button class="cta-button green-button" @onclick="ShowCompanies">Ver Compañías</button>
+        </div>
 
-<button class="btn btn-primary me-2" @onclick="ShowUsers">Ver Usuarios</button>
-<button class="btn btn-primary" @onclick="ShowCompanies">Ver Compañías</button>
+        <div class="section-card">
+            @if (showUsers)
+            {
+                <Users />
+            }
+            @if (showCompanies)
+            {
+                <Companies />
+            }
+        </div>
+    </div>
+</div>
 
-@if (showUsers)
-{
-    <Users />
-}
-@if (showCompanies)
-{
-    <Companies />
-}
 
 @code {
     private bool showUsers = false;

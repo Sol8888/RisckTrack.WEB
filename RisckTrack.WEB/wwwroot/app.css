@@ -1,3 +1,14 @@
+
+:root {
+    --verde-pastel: #e9f8ed;
+    --verde-banner: #d2f3dc;
+    --lila-pastel: #e6d6f3;
+    --lila-oscuro: #c28de1;
+    --verde-texto: #1c6b3c;
+}
+
+
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -7,9 +18,9 @@ a, .btn-link {
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #d9b3f3;
+    border-color: #c28de1;
+    color: white;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
