@@ -40,13 +40,18 @@
         if (result != null)
         {
             Session.SetSession(result.UserId, result.CompanyId, result.Role);
-            Navigation.NavigateTo("/counter");
+
+            if (result.Role == "A")
+                Navigation.NavigateTo("/admin-welcome");
+            else
+                Navigation.NavigateTo("/user-welcome");
         }
         else
         {
             Message = "Credenciales incorrectas.";
         }
     }
+
 }
 
 

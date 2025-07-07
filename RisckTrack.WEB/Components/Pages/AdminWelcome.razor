@@ -1,0 +1,29 @@
+﻿@page "/admin-welcome"
+@using RisckTrack.WEB.Services
+@inject UserSessionService Session
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Bienvenido, Administrador</h3>
+
+<p>Acceso completo al sistema.</p>
+
+<button class="btn btn-primary me-2" @onclick="NavigateToUsers">
+    Crear Usuarios
+</button>
+
+<button class="btn btn-secondary" @onclick="NavigateToCompanies">
+    Crear Compañías
+</button>
+
+@code {
+    private void NavigateToUsers()
+    {
+        Navigation.NavigateTo("/user");
+    }
+
+    private void NavigateToCompanies()
+    {
+        Navigation.NavigateTo("/company");
+    }
+}
