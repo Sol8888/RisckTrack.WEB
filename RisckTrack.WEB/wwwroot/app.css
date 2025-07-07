@@ -18,9 +18,14 @@ a, .btn-link {
 }
 
 .btn-primary {
-    background-color: #d9b3f3;
-    border-color: #c28de1;
-    color: white;
+    background-color: var(--verde-banner); /* #d2f3dc */
+    border-color: #b8e7c9;
+    color: var(--verde-texto); /* #1c6b3c */
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 0.6rem 1.4rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -87,6 +92,60 @@ h1:focus {
     font-size: 1.2rem;
     color: #3e945f;
     margin-bottom: 1.5rem;
+}
+.btn-success {
+    background-color: var(--verde-banner);
+    border-color: #b8e7c9;
+    color: var(--verde-texto);
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 0.6rem 1.4rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn-success:hover {
+        background-color: #b8e7c9;
+        transform: scale(1.03);
+    }
+
+/* Botón informativo: btn-info ? azul claro */
+.btn-info {
+    background-color: #d6eafd;
+    border-color: #aad1f7;
+    color: #2a5b85;
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 0.6rem 1.4rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-info:hover {
+        background-color: #b6dffc;
+        transform: scale(1.03);
+    }
+
+/* Botón de eliminar: btn-danger ? rojo suave */
+.btn-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 0.6rem 1.4rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-danger:hover {
+        background-color: #f1b0b7;
+        transform: scale(1.03);
+    }
+
+/* Opcional: botones pequeños como los de la tabla */
+.btn-sm {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
 }
 
 .cta-button {
