@@ -39,5 +39,9 @@ namespace RisckTrack.WEB.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<RiskAnalysisResult?> GetRiskAnalysisAsync(string assetId)
+        {
+            return await _http.GetFromJsonAsync<RiskAnalysisResult>($"api/RiskAnalysis/full/{assetId}");
+        }
     }
 }

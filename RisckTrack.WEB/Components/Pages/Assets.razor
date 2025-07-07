@@ -28,13 +28,13 @@
             <label>Tipo de Activo:</label>
             <InputSelect class="form-control" @bind-Value="newAsset.AssetTypeId">
                 <option value="">Seleccione un tipo</option>
-                <option value="1">Activos de datos / información</option>
+                <option value="1">Activos de datos</option>
                 <option value="2">Activos de software</option>
                 <option value="3">Activos de red</option>
-                <option value="4">Activos en la nube</option>
-                <option value="5">Activos de identidad y acceso</option>
-                <option value="6">Activos de comunicaciones</option>
-                <option value="7">Activos de monitoreo y seguridad</option>
+                <option value="4">Activos de datos en la nube</option>
+                <option value="5">Activos de software de identidad y acceso</option>
+                <option value="6">Activos de software de comunicaciones</option>
+                <option value="7">Activos de software de monitoreo y seguridad</option>
             </InputSelect>
         </div>
         <div class="mb-2">
@@ -125,20 +125,49 @@ else
                     <td>@asset.CompanyId</td>
                     <td>@(asset.ContainsPII == true ? "Sí" : "No")</td>
                     <td>
-                        
+                        <button class="btn btn-info btn-sm" @onclick="() => LoadRiskAnalysis(asset.AssetId)">Ver Análisis</button>
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteAsset(asset.AssetId)">Eliminar</button>
                     </td>
                 </tr>
+                @if (riskAnalysisResults.TryGetValue(asset.AssetId, out var analysis) && analysis != null)
+                {
+                    <tr>
+                        <td colspan="5">
+                            <strong>@analysis.Name</strong><br />
+                            <p><strong>Mensaje:</strong> @analysis.Message</p>
+                            <ul>
+                                <li><strong>Contiene PII:</strong> @(analysis.ContainsPII ? "Sí" : "No")</li>
+                                <li><strong>Riesgo Aceptado:</strong> @(analysis.RiesgoAceptado ? "Sí" : "No")</li>
+                                <li><strong>Decided Risk (USD):</strong> @analysis.DecidedRiskUsd</li>
+                                <li><strong>VNA:</strong> @analysis.Vna</li>
+                                <li><strong>SI:</strong> @analysis.Si</li>
+                                <li><strong>LEF:</strong> @analysis.Lef</li>
+                                <li><strong>PD:</strong> @analysis.Pd</li>
+                                <li><strong>PI:</strong> @analysis.Pi</li>
+                                <li><strong>CR:</strong> @analysis.Cr</li>
+                                <li><strong>CES:</strong> @analysis.Ces</li>
+                                <li><strong>DPF:</strong> @analysis.Dpf</li>
+                                <li><strong>DIRF:</strong> @analysis.Dirf</li>
+                                <li><strong>LM:</strong> @analysis.Lm</li>
+                                <li><strong>LM Típico:</strong> @analysis.LM_Tipico</li>
+                                <li><strong>ALE:</strong> @analysis.Ale</li>
+                                <li><strong>Umbral Aceptable:</strong> @analysis.UmbralAceptable</li>
+                            </ul>
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
 }
+
 
 @code {
     private List<AssetDto>? assets;
     private AssetDto newAsset = new();
     private bool showCreateForm = false;
     private List<TeamDto> teams = new();
+    private Dictionary<string, RiskAnalysisResult?> riskAnalysisResults = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -192,5 +221,18 @@ else
     {
         await AssetService.DeleteAssetAsync(id);
         await LoadAssets();
+    }
+
+    private async Task LoadRiskAnalysis(string assetId)
+    {
+        if (!riskAnalysisResults.ContainsKey(assetId))
+        {
+            var result = await AssetService.GetRiskAnalysisAsync(assetId);
+            riskAnalysisResults[assetId] = result;
+        }
+        else
+        {
+            riskAnalysisResults.Remove(assetId);
+        }
     }
 }
