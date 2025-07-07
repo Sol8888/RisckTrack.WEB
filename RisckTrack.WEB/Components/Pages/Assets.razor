@@ -117,7 +117,7 @@ else
                     <td>@asset.CompanyId</td>
                     <td>@(asset.ContainsPII == true ? "Sí" : "No")</td>
                     <td>
-                        <button class="btn btn-warning btn-sm">Editar</button>
+                        
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteAsset(asset.AssetId)">Eliminar</button>
                     </td>
                 </tr>
@@ -138,7 +138,15 @@ else
 
     private async Task LoadAssets()
     {
-        assets = await AssetService.GetAssetsAsync();
+        var allAssets = await AssetService.GetAssetsAsync();
+        if (Session.CompanyId.HasValue)
+        {
+            assets = allAssets?.Where(a => a.CompanyId == Session.CompanyId.Value).ToList();
+        }
+        else
+        {
+            assets = new(); 
+        }
     }
 
     private void ToggleCreateAssetForm()
