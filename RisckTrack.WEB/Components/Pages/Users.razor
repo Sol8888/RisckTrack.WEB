@@ -1,6 +1,7 @@
 ﻿@using RisckTrack.WEB.Services
 @using RisckTrack.WEB.Models
 @inject UserService UserService
+@inject CompanyService CompanyService
 
 <h3>Users</h3>
 
@@ -15,9 +16,19 @@
         <ValidationSummary />
 
         <div class="mb-2">
-            <label>ID Compañía:</label>
-            <InputNumber class="form-control" @bind-Value="newUser.CompanyId" />
+            <label>Compañía:</label>
+            <InputSelect class="form-control" @bind-Value="newUser.CompanyId">
+                <option value="">Seleccione una compañía</option>
+                @if (companies != null)
+                {
+                    @foreach (var company in companies)
+                    {
+                        <option value="@company.CompanyId">@company.Name</option>
+                    }
+                }
+            </InputSelect>
         </div>
+
         <div class="mb-2">
             <label>Usuario:</label>
             <InputText class="form-control" @bind-Value="newUser.Username" />
@@ -52,6 +63,7 @@ else
                 <th>Usuario</th>
                 <th>Email</th>
                 <th>Rol</th>
+                <th>Compañía</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -63,6 +75,9 @@ else
                     <td>@user.Username</td>
                     <td>@user.Email</td>
                     <td>@user.Role</td>
+                    <td>
+                        @companies?.FirstOrDefault(c => c.CompanyId == user.CompanyId)?.Name
+                    </td>
                     <td>
                         <button class="btn btn-warning btn-sm">Editar</button>
                         <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteUser(user.UserId))">Eliminar</button>
@@ -77,10 +92,12 @@ else
     private List<UserDto>? users;
     private bool showCreateForm = false;
     private UserDto newUser = new();
+    private List<CompanyDto>? companies;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadUsers();
+        companies = await CompanyService.GetCompaniesAsync();
     }
 
     private async Task LoadUsers()
