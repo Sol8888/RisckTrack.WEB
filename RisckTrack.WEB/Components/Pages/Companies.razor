@@ -3,6 +3,31 @@
 @inject CompanyService CompanyService
 
 <h3>Companies</h3>
+<button class="btn btn-success mb-3" @onclick="ToggleCreateCompanyForm">
+    @(showCreateForm ? "Cancelar" : "Crear Compañía")
+</button>
+@if (showCreateForm)
+{
+    <EditForm Model="newCompany" OnValidSubmit="CreateCompany">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label>Nombre:</label>
+            <InputText class="form-control" @bind-Value="newCompany.Name" />
+        </div>
+        <div class="mb-2">
+            <label>Sector:</label>
+            <InputText class="form-control" @bind-Value="newCompany.Sector" />
+        </div>
+        <div class="mb-2">
+            <label>RUC:</label>
+            <InputText class="form-control" @bind-Value="newCompany.Ruc" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </EditForm>
+}
 @if (companies == null)
 {
     <p>Cargando compañías...</p>
@@ -14,7 +39,8 @@ else
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
+                <th>Sector</th>
+                <th>RUC</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -24,7 +50,8 @@ else
                 <tr>
                     <td>@company.CompanyId</td>
                     <td>@company.Name</td>
-                    <td>@company.Description</td>
+                    <td>@company.Sector</td>
+                    <td>@company.Ruc</td>
                     <td>
                         <button class="btn btn-warning btn-sm">Editar</button>
                         <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteCompany(company.CompanyId))">Eliminar</button>
@@ -39,15 +66,38 @@ else
 
 @code {
     private List<CompanyDto>? companies;
+    private bool showCreateForm = false;
+    private CompanyDto newCompany = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCompanies();
+    }
+
+    private async Task LoadCompanies()
+    {
         companies = await CompanyService.GetCompaniesAsync();
+    }
+
+    private void ToggleCreateCompanyForm()
+    {
+        showCreateForm = !showCreateForm;
+        newCompany = new(); // limpiar formulario
+    }
+
+    private async Task CreateCompany()
+    {
+        var success = await CompanyService.CreateCompanyAsync(newCompany);
+        if (success)
+        {
+            await LoadCompanies();
+            ToggleCreateCompanyForm();
+        }
     }
 
     private async Task DeleteCompany(int id)
     {
         await CompanyService.DeleteCompanyAsync(id);
-        companies = await CompanyService.GetCompaniesAsync();
+        await LoadCompanies();
     }
 }
