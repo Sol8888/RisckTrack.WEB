@@ -15,19 +15,16 @@
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="mb-2">
-            <label>Activo:</label>
-            <InputSelect class="form-control" @bind-Value="newIncident.AssetId">
-                <option value="">Seleccione un activo</option>
-                @if (assets != null)
+        <InputSelect class="form-control" @bind-Value="newIncident.AssetId">
+            <option value="">Seleccione un activo</option>
+            @if (assets != null)
+            {
+                @foreach (var asset in assets)
                 {
-                    @foreach (var asset in assets)
-                    {
-                        <option value="@asset.AssetId">@asset.Name</option>
-                    }
+                    <option value="@asset.AssetId">@asset.Name</option>
                 }
-            </InputSelect>
-        </div>
+            }
+        </InputSelect>
 
         <div class="mb-2">
             <label>Fecha:</label>
@@ -94,13 +91,34 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadIncidents();
         await LoadAssets();
+        await LoadIncidents();
     }
 
     private async Task LoadIncidents()
     {
-        incidents = await IncidentService.GetIncidentsAsync();
+       
+        var allIncidents = await IncidentService.GetIncidentsAsync();
+
+        
+        if (assets is null)
+            await LoadAssets();
+
+        if (Session.CompanyId.HasValue && assets != null)
+        {
+            
+            var assetIds = assets
+                .Where(a => a.CompanyId == Session.CompanyId.Value)
+                .Select(a => a.AssetId)
+                .ToHashSet();
+
+            
+            incidents = allIncidents?.Where(i => assetIds.Contains(i.AssetId)).ToList();
+        }
+        else
+        {
+            incidents = new(); 
+        }
     }
 
     private async Task LoadAssets()
