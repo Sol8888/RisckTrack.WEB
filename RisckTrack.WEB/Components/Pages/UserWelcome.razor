@@ -7,8 +7,29 @@
 
 <p>Desde aquí puedes gestionar tus activos.</p>
 
-<Asset />
+<button class="btn btn-primary" @onclick="ShowAssets">Ver Activos</button>
+<button class="btn btn-primary" @onclick="ShowIncidents">Ver Activos</button>
+@if (showAssets)
+{
+    <Asset />
+}
+@if (showIncidents)
+{
+    <Incident />
+}
 
 @code {
+    private bool showAssets = false;
+    private bool showIncidents = false;
 
+    private void ShowAssets()
+    {
+        showAssets = true;
+        showIncidents = false;
+    }
+    private void ShowIncidents()
+    {
+        showIncidents = true;
+        showAssets = false;
+    }
 }
