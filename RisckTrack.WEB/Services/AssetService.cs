@@ -43,5 +43,11 @@ namespace RisckTrack.WEB.Services
         {
             return await _http.GetFromJsonAsync<RiskAnalysisResult>($"api/RiskAnalysis/full/{assetId}");
         }
+
+        public async Task<RiskTreatmentResponse?> CalculateTreatmentAsync(RiskTreatmentRequest request)
+        {
+            var response = await _http.PostAsJsonAsync("api/RiskAnalysis/treatment", request);
+            return await response.Content.ReadFromJsonAsync<RiskTreatmentResponse>();
+        }
     }
 }
