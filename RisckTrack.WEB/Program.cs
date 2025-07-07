@@ -14,6 +14,8 @@ builder.Services.AddScoped(sp => new HttpClient
 
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CompanyService>();
 
 var app = builder.Build();
 
