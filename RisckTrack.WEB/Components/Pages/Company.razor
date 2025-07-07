@@ -1,0 +1,121 @@
+﻿@page "/companias"
+@using RisckTrack.WEB.Services
+@using RisckTrack.WEB.Models
+@inject CompanyService CompanyService
+@inject UserSessionService Session
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Gestión de Compañías</h3>
+
+@if (Session.Role != "A")
+{
+    <p>Acceso denegado.</p>
+}
+else if (companies == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var company in companies)
+            {
+                <tr>
+                    <td>@company.Name</td>
+                    <td>@company.Description</td>
+                    <td>
+                        <button @onclick="() => EditCompany(company)">Editar</button>
+                        <button @onclick="() => DeleteCompany(company.CompanyId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>@(isEditing ? "Editar Compañía" : "Nueva Compañía")</h4>
+
+    <EditForm Model="companyForm" OnValidSubmit="HandleSubmit">
+        <InputText @bind-Value="companyForm.Name" placeholder="Nombre" class="form-control mb-2" />
+        <InputText @bind-Value="companyForm.Description" placeholder="Descripción" class="form-control mb-2" />
+        <button type="submit" class="btn btn-primary me-2">@(isEditing ? "Actualizar" : "Crear")</button>
+        @if (isEditing)
+        {
+            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancelar</button>
+        }
+    </EditForm>
+}
+
+@code {
+    private List<CompanyDto>? companies;
+    private CompanyDto companyForm = new();
+    private bool isEditing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Session.Role != "A")
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        await LoadCompanies();
+    }
+
+    private async Task LoadCompanies()
+    {
+        companies = await CompanyService.GetCompaniesAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        bool success;
+
+        if (isEditing)
+        {
+            success = await CompanyService.UpdateCompanyAsync(companyForm.CompanyId, companyForm);
+        }
+        else
+        {
+            success = await CompanyService.CreateCompanyAsync(companyForm);
+        }
+
+        if (success)
+        {
+            await LoadCompanies();
+            companyForm = new();
+            isEditing = false;
+        }
+    }
+
+    private void EditCompany(CompanyDto company)
+    {
+        companyForm = new CompanyDto
+            {
+                CompanyId = company.CompanyId,
+                Name = company.Name,
+                Description = company.Description
+            };
+        isEditing = true;
+    }
+
+    private void CancelEdit()
+    {
+        companyForm = new();
+        isEditing = false;
+    }
+
+    private async Task DeleteCompany(int id)
+    {
+        await CompanyService.DeleteCompanyAsync(id);
+        await LoadCompanies();
+    }
+}
