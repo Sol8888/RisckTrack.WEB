@@ -1,0 +1,116 @@
+﻿@page "/teams"
+@using RisckTrack.WEB.Models
+@using RisckTrack.WEB.Services
+@inject TeamService TeamService
+@inject UserSessionService Session
+
+<h3>Equipos</h3>
+
+<button class="btn btn-success mb-3" @onclick="ToggleCreateForm">
+    @(showCreateForm ? "Cancelar" : "Crear Equipo")
+</button>
+
+@if (showCreateForm)
+{
+    <EditForm Model="newTeam" OnValidSubmit="CreateTeam">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label>Nombre:</label>
+            <InputText class="form-control" @bind-Value="newTeam.Name" />
+        </div>
+        <div class="mb-2">
+            <label>Líder:</label>
+            <InputText class="form-control" @bind-Value="newTeam.Leader" />
+        </div>
+        <div class="mb-2">
+            <label>Email de Contacto:</label>
+            <InputText class="form-control" @bind-Value="newTeam.ContactEmail" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </EditForm>
+}
+
+@if (teams == null)
+{
+    <p>Cargando equipos...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Líder</th>
+                <th>Contacto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var team in teams)
+            {
+                <tr>
+                    <td>@team.Name</td>
+                    <td>@team.Leader</td>
+                    <td>@team.ContactEmail</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteTeam(team.TeamId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<TeamDto>? teams;
+    private TeamDto newTeam = new();
+    private bool showCreateForm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTeams();
+    }
+
+    private async Task LoadTeams()
+    {
+        var allTeams = await TeamService.GetTeamsAsync();
+        if (Session.CompanyId.HasValue)
+        {
+            teams = allTeams?.Where(t => t.CompanyId == Session.CompanyId).ToList();
+        }
+        else
+        {
+            teams = new List<TeamDto>();
+        }
+    }
+
+    private void ToggleCreateForm()
+    {
+        showCreateForm = !showCreateForm;
+        newTeam = new TeamDto();
+
+        if (Session.CompanyId.HasValue)
+        {
+            newTeam.CompanyId = Session.CompanyId.Value;
+        }
+    }
+
+    private async Task CreateTeam()
+    {
+        var success = await TeamService.CreateTeamAsync(newTeam);
+        if (success)
+        {
+            await LoadTeams();
+            ToggleCreateForm();
+        }
+    }
+
+    private async Task DeleteTeam(int id)
+    {
+        await TeamService.DeleteTeamAsync(id);
+        await LoadTeams();
+    }
+}

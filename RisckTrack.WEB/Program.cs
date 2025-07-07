@@ -18,6 +18,7 @@ builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CompanyService>();
 builder.Services.AddScoped<IncidentService>();
+builder.Services.AddScoped<TeamService>();
 
 var app = builder.Build();
 

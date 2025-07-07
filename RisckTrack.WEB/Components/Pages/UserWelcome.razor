@@ -7,8 +7,10 @@
 
 <p>Desde aquí puedes gestionar tus activos.</p>
 
+<button class="btn btn-primary" @onclick="ShowTeams">Ver Grupos</button>
 <button class="btn btn-primary" @onclick="ShowAssets">Ver Activos</button>
 <button class="btn btn-primary" @onclick="ShowIncidents">Ver Incidentes</button>
+
 @if (showAssets)
 {
     <Assets />
@@ -17,19 +19,33 @@
 {
     <Incidents /> 
 }
+@if (showTeams)
+{
+    <Teams />
+}
+
 
 @code {
     private bool showAssets = false;
     private bool showIncidents = false;
+    private bool showTeams = false;
 
     private void ShowAssets()
     {
         showAssets = true;
         showIncidents = false;
+        showTeams = false;
     }
     private void ShowIncidents()
     {
         showIncidents = true;
         showAssets = false;
+        showTeams = false;
+    }
+    private void ShowTeams()
+    {
+        showIncidents = false;
+        showAssets = false;
+        showTeams = true;
     }
 }
