@@ -10,6 +10,7 @@
 <button class="btn btn-primary" @onclick="ShowTeams">Ver Grupos</button>
 <button class="btn btn-primary" @onclick="ShowAssets">Ver Activos</button>
 <button class="btn btn-primary" @onclick="ShowIncidents">Ver Incidentes</button>
+<button class="btn btn-primary" @onclick="ShowTreatment">Ver Soluciones</button>
 
 @if (showAssets)
 {
@@ -23,29 +24,45 @@
 {
     <Teams />
 }
+@if (showTreatment)
+{
+    <Treatment />
+}
 
 
 @code {
     private bool showAssets = false;
     private bool showIncidents = false;
     private bool showTeams = false;
+    private bool showTreatment = false;
 
     private void ShowAssets()
     {
         showAssets = true;
         showIncidents = false;
         showTeams = false;
+        showTreatment = false;
     }
     private void ShowIncidents()
     {
         showIncidents = true;
         showAssets = false;
         showTeams = false;
+        showTreatment = false;
     }
     private void ShowTeams()
     {
         showIncidents = false;
         showAssets = false;
         showTeams = true;
+        showTreatment = false;
+    }
+    private void ShowTreatment()
+    {
+        showIncidents = false;
+        showAssets = false;
+        showTeams = false;
+        showTreatment = true;
+
     }
 }

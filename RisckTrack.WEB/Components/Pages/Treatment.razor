@@ -1,0 +1,116 @@
+﻿@page "/treatment"
+@using RisckTrack.WEB.Services
+@inject AssetService AssetService
+@inject UserSessionService Session
+@using RisckTrack.WEB.Models
+
+<h3>Tratamiento del Riesgo</h3>
+
+@if (!Session.IsLoggedIn)
+{
+    <p class="text-danger">Debes iniciar sesión para acceder a esta sección.</p>
+}
+else if (companyAssets == null)
+{
+    <p>Cargando activos...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Tipo</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var asset in companyAssets)
+            {
+                <tr>
+                    <td>@asset.AssetId</td>
+                    <td>@asset.Name</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" @onclick="() => ShowTreatmentForm(asset.AssetId)">Calcular Tratamiento</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showTreatmentForm)
+{
+    <hr />
+    <h4>Calcular Tratamiento para el Asset: <b>@treatmentRequest.AssetId</b></h4>
+    <EditForm Model="treatmentRequest" OnValidSubmit="SubmitTreatment">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="controlCost">Costo del Control:</label>
+            <InputNumber id="controlCost" class="form-control" @bind-Value="treatmentRequest.ControlCost" />
+        </div>
+
+        <div class="mb-3">
+            <label for="reductionFactor">Factor Estimado de Reducción:</label>
+            <InputNumber id="reductionFactor" class="form-control" @bind-Value="treatmentRequest.EstimatedReductionFactor" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Calcular</button>
+    </EditForm>
+}
+
+@if (treatmentResult != null)
+{
+    <div class="mt-4">
+        <h5>Resultado del Tratamiento</h5>
+        <ul>
+            <li><strong>AssetId:</strong> @treatmentResult.AssetId</li>
+            <li><strong>ALE Inicial:</strong> @treatmentResult.Ale_Inicial</li>
+            <li><strong>ALE Residual:</strong> @treatmentResult.Ale_Residual</li>
+            <li><strong>Costo del Control:</strong> @treatmentResult.ControlCost</li>
+            <li><strong>Ganancia Neta:</strong> @treatmentResult.GananciaNeta</li>
+            <li><strong>ROSI:</strong> @treatmentResult.Rosi</li>
+            <li><strong>Mensaje:</strong> @treatmentResult.Message</li>
+        </ul>
+    </div>
+}
+@code {
+
+    private List<AssetDto>? companyAssets;
+    private RiskTreatmentRequest treatmentRequest = new();
+    private RiskTreatmentResponse? treatmentResult;
+    private bool showTreatmentForm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Session.IsLoggedIn && Session.CompanyId.HasValue)
+        {
+            var allAssets = await AssetService.GetAssetsAsync();
+            companyAssets = allAssets
+                .Where(a => a.CompanyId == Session.CompanyId.Value)
+                .ToList();
+        }
+    }
+
+    private void ShowTreatmentForm(string assetId)
+    {
+        treatmentRequest = new RiskTreatmentRequest
+            {
+                AssetId = assetId,
+                ControlCost = 0,
+                EstimatedReductionFactor = 0
+            };
+        treatmentResult = null;
+        showTreatmentForm = true;
+    }
+
+    private async Task SubmitTreatment()
+    {
+        treatmentResult = await AssetService.CalculateTreatmentAsync(treatmentRequest);
+        showTreatmentForm = false;
+    }
+
+}
