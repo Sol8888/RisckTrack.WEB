@@ -1,0 +1,53 @@
+﻿@using RisckTrack.WEB.Services
+@using RisckTrack.WEB.Models
+@inject CompanyService CompanyService
+
+<h3>Companies</h3>
+@if (companies == null)
+{
+    <p>Cargando compañías...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var company in companies)
+            {
+                <tr>
+                    <td>@company.CompanyId</td>
+                    <td>@company.Name</td>
+                    <td>@company.Description</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteCompany(company.CompanyId))">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+    private List<CompanyDto>? companies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = await CompanyService.GetCompaniesAsync();
+    }
+
+    private async Task DeleteCompany(int id)
+    {
+        await CompanyService.DeleteCompanyAsync(id);
+        companies = await CompanyService.GetCompaniesAsync();
+    }
+}

@@ -8,7 +8,31 @@
 
 <p>Acceso completo al sistema.</p>
 
+<button class="btn btn-primary me-2" @onclick="ShowUsers">Ver Usuarios</button>
+<button class="btn btn-primary" @onclick="ShowCompanies">Ver Compañías</button>
+
+@if (showUsers)
+{
+    <Users />
+}
+@if (showCompanies)
+{
+    <Companies />
+}
 
 @code {
-    
+    private bool showUsers = false;
+    private bool showCompanies = false;
+
+    private void ShowUsers()
+    {
+        showUsers = true;
+        showCompanies = false;
+    }
+
+    private void ShowCompanies()
+    {
+        showCompanies = true;
+        showUsers = false;
+    }
 }
