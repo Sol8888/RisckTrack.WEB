@@ -1,0 +1,136 @@
+﻿@page "/incidents"
+@using RisckTrack.WEB.Models
+@using RisckTrack.WEB.Services
+@inject IncidentService IncidentService
+@inject AssetService AssetService
+@inject UserSessionService Session
+
+<h3>Incidents</h3>
+<button class="btn btn-success mb-3" @onclick="ToggleCreateIncidentForm">
+    @(showCreateForm ? "Cancelar" : "Crear Incidente")
+</button>
+@if (showCreateForm)
+{
+    <EditForm Model="newIncident" OnValidSubmit="CreateIncident">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label>Activo:</label>
+            <InputSelect class="form-control" @bind-Value="newIncident.AssetId">
+                <option value="">Seleccione un activo</option>
+                @if (assets != null)
+                {
+                    @foreach (var asset in assets)
+                    {
+                        <option value="@asset.AssetId">@asset.Name</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <div class="mb-2">
+            <label>Fecha:</label>
+            <InputDate class="form-control" @bind-Value="newIncident.IncidentDate" />
+        </div>
+
+        <div class="mb-2">
+            <label>Descripción:</label>
+            <InputTextArea class="form-control" @bind-Value="newIncident.Description" />
+        </div>
+
+        <div class="mb-2">
+            <label>Horas de resolución:</label>
+            <InputNumber class="form-control" @bind-Value="newIncident.ResolutionDurationHours" />
+        </div>
+
+        <div class="mb-2">
+            <label>Minutos de impacto:</label>
+            <InputNumber class="form-control" @bind-Value="newIncident.ImpactDurationMinutes" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </EditForm>
+}
+
+@if (incidents == null)
+{
+    <p>Cargando incidentes...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Activo</th>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in incidents)
+            {
+                <tr>
+                    <td>@i.IncidentId</td>
+                    <td>@i.AssetId</td>
+                    <td>@i.IncidentDate.ToShortDateString()</td>
+                    <td>@i.Description</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => DeleteIncident(i.IncidentId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<IncidentDto>? incidents;
+    private List<AssetDto>? assets;
+    private IncidentDto newIncident = new();
+    private bool showCreateForm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIncidents();
+        await LoadAssets();
+    }
+
+    private async Task LoadIncidents()
+    {
+        incidents = await IncidentService.GetIncidentsAsync();
+    }
+
+    private async Task LoadAssets()
+    {
+        var allAssets = await AssetService.GetAssetsAsync();
+        if (Session.CompanyId.HasValue)
+        {
+            assets = allAssets?.Where(a => a.CompanyId == Session.CompanyId.Value).ToList();
+        }
+    }
+
+    private void ToggleCreateIncidentForm()
+    {
+        showCreateForm = !showCreateForm;
+        newIncident = new();
+    }
+
+    private async Task CreateIncident()
+    {
+        var success = await IncidentService.CreateIncidentAsync(newIncident);
+        if (success)
+        {
+            await LoadIncidents();
+            ToggleCreateIncidentForm();
+        }
+    }
+
+    private async Task DeleteIncident(int id)
+    {
+        await IncidentService.DeleteIncidentAsync(id);
+        await LoadIncidents();
+    }
+}
