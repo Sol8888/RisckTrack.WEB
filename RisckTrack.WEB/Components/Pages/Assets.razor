@@ -2,6 +2,8 @@
 @using RisckTrack.WEB.Models
 @using RisckTrack.WEB.Services
 @inject AssetService AssetService
+@inject TeamService TeamService
+@inject UserSessionService Session
 
 <h3>Assets</h3>
 <button class="btn btn-success mb-3" @onclick="ToggleCreateAssetForm">
@@ -36,8 +38,14 @@
             </InputSelect>
         </div>
         <div class="mb-2">
-            <label>Owner Team:</label>
-            <InputNumber class="form-control" @bind-Value="newAsset.OwnerTeamId" />
+            <label>Equipo responsable:</label>
+            <InputSelect class="form-control" @bind-Value="newAsset.OwnerTeamId">
+                <option value="">Seleccione un equipo</option>
+                @foreach (var team in teams)
+                {
+                    <option value="@team.TeamId">@team.Name</option>
+                }
+            </InputSelect>
         </div>
         <div class="mb-2">
             <label>Contiene PII:</label>
@@ -130,10 +138,12 @@ else
     private List<AssetDto>? assets;
     private AssetDto newAsset = new();
     private bool showCreateForm = false;
+    private List<TeamDto> teams = new();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadAssets();
+        await LoadTeams();
     }
 
     private async Task LoadAssets()
@@ -146,6 +156,15 @@ else
         else
         {
             assets = new(); 
+        }
+    }
+
+    private async Task LoadTeams()
+    {
+        if (Session.CompanyId.HasValue)
+        {
+            var allTeams = await TeamService.GetTeamsAsync();
+            teams = allTeams.Where(t => t.CompanyId == Session.CompanyId.Value).ToList();
         }
     }
 
