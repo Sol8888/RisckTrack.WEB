@@ -48,23 +48,23 @@
             </InputSelect>
         </div>
         <div class="mb-2">
-            <label>Contiene PII:</label>
+            <label>Contiene PII (Contine datos Personales):</label>
             <InputCheckbox class="form-check-input" @bind-Value="newAsset.ContainsPII" />
         </div>
         <div class="mb-2">
-            <label>Fuente de Datos:</label>
+            <label>Fuente de Datos (De donde viene el activo):</label>
             <InputText class="form-control" @bind-Value="newAsset.DataSource" />
         </div>
         <div class="mb-2">
-            <label>Revenue por minuto:</label>
+            <label>Revenue por minuto (USD)(Cuato genera el activo por minuto):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.RevenuePerMinuteUsd" />
         </div>
         <div class="mb-2">
-            <label>% Flujo Crítico:</label>
+            <label>% Flujo Crítico (Porcentaje de procesos que dependen del activo (De 0 a 1)):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.CriticalFlowPercentage" />
         </div>
         <div class="mb-2">
-            <label>Registros PII:</label>
+            <label>Registros PII (Registros que manejan datos personajes):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.TotalPiiRecords" />
         </div>
         <div class="mb-2">
@@ -72,27 +72,27 @@
             <InputNumber class="form-control" @bind-Value="newAsset.AnnualLicenseCostUsd" />
         </div>
         <div class="mb-2">
-            <label>Horas Soporte Anual:</label>
+            <label>Horas Soporte de Anual (USD):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.AnnualSupportHours" />
         </div>
         <div class="mb-2">
-            <label>Costo Hora Ingeniero (USD):</label>
+            <label>Costo de la hora del Ingeniero (USD):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.EngineerHourlyRateUsd" />
         </div>
         <div class="mb-2">
-            <label>Downtime mensual (min):</label>
+            <label>Downtime mensual (min) (Tiempo promedio en la que el activo estuvo fuera de servicio):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.MonthlyDowntimeMin" />
         </div>
         <div class="mb-2">
-            <label>Vulnerabilidades críticas anuales:</label>
+            <label>Vulnerabilidades críticas anuales (Cuantos errores graves sin resolver hay ):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.AnnualCriticalVulnerabilities" />
         </div>
         <div class="mb-2">
-            <label>Errores de corrupción:</label>
+            <label>Numero de Incidentes que han pasado en el ultimo año:</label>
             <InputNumber class="form-control" @bind-Value="newAsset.DataCorruptionErrors" />
         </div>
         <div class="mb-2">
-            <label>Riesgo decidido (USD):</label>
+            <label>Riesgo decidido  (USD) (Cuanto esta dispuesto a perder por el activo):</label>
             <InputNumber class="form-control" @bind-Value="newAsset.DecidedRiskUsd" />
         </div>
 

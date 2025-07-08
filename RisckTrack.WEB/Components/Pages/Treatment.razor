@@ -48,12 +48,12 @@ else
         <ValidationSummary />
 
         <div class="mb-3">
-            <label for="controlCost">Costo del Control:</label>
+            <label for="controlCost">Costo de la solucion que se quiere medir:</label>
             <InputNumber id="controlCost" class="form-control" @bind-Value="treatmentRequest.ControlCost" />
         </div>
 
         <div class="mb-3">
-            <label for="reductionFactor">Factor Estimado de Reducción:</label>
+            <label for="reductionFactor">Factor Estimado de Reducción (de o a 1):</label>
             <InputNumber id="reductionFactor" class="form-control" @bind-Value="treatmentRequest.EstimatedReductionFactor" />
         </div>
 
