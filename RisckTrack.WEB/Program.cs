@@ -7,10 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped(sp => new HttpClient
+
+builder.Services.AddHttpClient("ApiLogin", client =>
 {
-    BaseAddress = new Uri("https://localhost:7220/") 
+    client.BaseAddress = new Uri("https://localhost:7039/");
 });
+
+builder.Services.AddHttpClient("ApiPrograma", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7220/");
+});
+
+
 
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddScoped<AuthService>();
