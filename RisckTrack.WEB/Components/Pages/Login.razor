@@ -1,10 +1,13 @@
 ﻿@page "/login"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage 
 @inject HttpClient Http
 @using RisckTrack.WEB.Models
 @using RisckTrack.WEB.Services
+@inject AuthService AuthService
+@inject TwoFactorService TwoFAService
+@inject ProtectedSessionStorage SessionStorage
 @inject UserSessionService Session
 @inject NavigationManager Navigation
-@inject AuthService AuthService
 @rendermode InteractiveServer
 
 <div class="login-wrapper">
@@ -26,6 +29,14 @@
             </div>
 
             <button type="submit" class="login-button">Ingresar</button>
+            @if (CodeRequested)
+            {
+                <div class="form-group mt-3">
+                    <label>Código de verificación:</label>
+                    <InputText class="form-control" @bind-Value="Code" placeholder="Ingresa el código" />
+                    <button class="login-button mt-2" @onclick="Verify2FAAsync">Verificar código</button>
+                </div>
+            }
 
             @if (!string.IsNullOrEmpty(Message))
             {
@@ -37,25 +48,51 @@
 
 @code {
     private UserLoginDto loginModel = new();
+    private string Code = string.Empty;
     private string Message = string.Empty;
+    private bool CodeRequested = false;
 
     private async Task HandleLogin()
     {
-        var result = await AuthService.LoginAsync(loginModel);
-        if (result != null)
-        {
-            Session.SetSession(result.UserId, result.CompanyId, result.Role);
+        var loginResponse = await AuthService.LoginAsync(loginModel);
 
-            if (result.Role == "A")
-                Navigation.NavigateTo("/admin-welcome");
-            else
-                Navigation.NavigateTo("/user-welcome");
+        if (loginResponse != null)
+        {
+            await SessionStorage.SetAsync("userEmail", loginModel.Email);
+            CodeRequested = true;
+            Message = "Código de verificación enviado al correo.";
         }
         else
         {
             Message = "Credenciales incorrectas.";
         }
     }
+
+    private async Task Verify2FAAsync()
+    {
+        var emailResult = await SessionStorage.GetAsync<string>("userEmail");
+        var email = emailResult.Success ? emailResult.Value : string.Empty;
+
+        var result = await TwoFAService.VerifyCodeAsync(email, Code);
+
+        if (result != null)
+        {
+            await SessionStorage.DeleteAsync("userEmail");
+
+            Session.SetSession(result.UserId, result.CompanyId, result.Role);
+
+            if (result.Role == "S" && result.Role == "A")
+                Navigation.NavigateTo("/admin-welcome");
+            else
+                Navigation.NavigateTo("/user-welcome");
+        }
+        else
+        {
+            Message = "Código incorrecto. Intenta nuevamente.";
+        }
+    }
+
+
 
 }
 
