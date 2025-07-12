@@ -7,17 +7,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-
 builder.Services.AddHttpClient("ApiLogin", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7039/");
 });
 
-builder.Services.AddHttpClient("ApiPrograma", client =>
+builder.Services.AddScoped<AuthService>(sp =>
 {
-    client.BaseAddress = new Uri("https://localhost:7220/");
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    var client = factory.CreateClient("ApiLogin");
+    return new AuthService(client);
 });
-
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7220/")
+});
 
 
 builder.Services.AddScoped<UserSessionService>();
