@@ -2,52 +2,44 @@
 @using RisckTrack.WEB.Models
 @inject UserService UserService
 @inject CompanyService CompanyService
+@inject UserSessionService Session
+@rendermode InteractiveServer
 
-<h3>Users</h3>
+<h3>Usuarios</h3>
 
-<button class="btn btn-success mb-3" @onclick="ToggleCreateUserForm">
-    @(showCreateForm ? "Cancelar" : "Crear Usuario")
-</button>
-
-@if (showCreateForm)
+@if (Session.Role == "A")
 {
-    <EditForm Model="newUser" OnValidSubmit="CreateUser">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    <button class="btn btn-success mb-3" @onclick="ToggleCreateUserForm">
+        @(showCreateForm ? "Cancelar" : "Crear Usuario")
+    </button>
 
-        <div class="mb-2">
-            <label>Compañía:</label>
-            <InputSelect class="form-control" @bind-Value="newUser.CompanyId">
-                <option value="">Seleccione una compañía</option>
-                @if (companies != null)
-                {
-                    @foreach (var company in companies)
-                    {
-                        <option value="@company.CompanyId">@company.Name</option>
-                    }
-                }
-            </InputSelect>
-        </div>
+    @if (showCreateForm)
+    {
+        <EditForm Model="newUser" OnValidSubmit="CreateUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <div class="mb-2">
-            <label>Usuario:</label>
-            <InputText class="form-control" @bind-Value="newUser.Username" />
-        </div>
-        <div class="mb-2">
-            <label>Email:</label>
-            <InputText class="form-control" @bind-Value="newUser.Email" />
-        </div>
-        <div class="mb-2">
-            <label>Contraseña:</label>
-            <InputText class="form-control" type="password" @bind-Value="newUser.Password" />
-        </div>
-        <div class="mb-2">
-            <label>Rol:</label>
-            <InputText class="form-control" @bind-Value="newUser.Role" />
-        </div>
+            <!-- Usuario -->
+            <div class="mb-2">
+                <label>Usuario:</label>
+                <InputText class="form-control" @bind-Value="newUser.Username" />
+            </div>
 
-        <button class="btn btn-primary" type="submit">Guardar</button>
-    </EditForm>
+            <!-- Email -->
+            <div class="mb-2">
+                <label>Email:</label>
+                <InputText class="form-control" @bind-Value="newUser.Email" />
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-2">
+                <label>Contraseña:</label>
+                <InputText class="form-control" type="password" @bind-Value="newUser.Password" />
+            </div>
+
+            <button class="btn btn-primary" type="submit">Guardar</button>
+        </EditForm>
+    }
 }
 
 @if (users == null)
@@ -68,19 +60,20 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in users)
+            @foreach (var user in users
+                    .Where(u => u.CompanyId == Session.CompanyId && u.Role == "U"))
             {
                 <tr>
                     <td>@user.UserId</td>
                     <td>@user.Username</td>
                     <td>@user.Email</td>
                     <td>@user.Role</td>
+                    <td>@companies?.FirstOrDefault(c => c.CompanyId == user.CompanyId)?.Name</td>
                     <td>
-                        @companies?.FirstOrDefault(c => c.CompanyId == user.CompanyId)?.Name
-                    </td>
-                    <td>
-                        
-                        <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteUser(user.UserId))">Eliminar</button>
+                        @if (Session.Role == "A")
+                        {
+                            <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteUser(user.UserId))">Eliminar</button>
+                        }
                     </td>
                 </tr>
             }
@@ -90,9 +83,9 @@ else
 
 @code {
     private List<UserDto>? users;
+    private List<CompanyDto>? companies;
     private bool showCreateForm = false;
     private UserDto newUser = new();
-    private List<CompanyDto>? companies;
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,11 +101,16 @@ else
     private void ToggleCreateUserForm()
     {
         showCreateForm = !showCreateForm;
-        newUser = new(); // Reset form
+        newUser = new(); 
     }
 
     private async Task CreateUser()
     {
+        if (Session.Role != "A" || !Session.CompanyId.HasValue) return;
+
+        newUser.CompanyId = Session.CompanyId.Value;
+        newUser.Role = "U";
+
         var success = await UserService.CreateUserAsync(newUser);
         if (success)
         {
@@ -126,5 +124,4 @@ else
         await UserService.DeleteUserAsync(id);
         await LoadUsers();
     }
-
 }
