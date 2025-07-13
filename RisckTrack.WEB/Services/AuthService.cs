@@ -14,7 +14,7 @@ namespace RisckTrack.WEB.Services
 
         public async Task<UserLoginResponse?> LoginAsync(UserLoginDto request)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/Users/login", request);
+            var response = await _httpClient.PostAsJsonAsync("/api/Auth/login", request);
 
             if (response.IsSuccessStatusCode)
             {
