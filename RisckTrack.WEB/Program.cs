@@ -19,6 +19,10 @@ builder.Services.AddHttpClient("MainApi", client =>
     client.BaseAddress = new Uri("https://localhost:7220/");
 });
 
+builder.Services.AddHttpClient("UserCreatorAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7019/");
+});
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddScoped<AuthService>(sp =>
 {
@@ -32,7 +36,7 @@ builder.Services.AddScoped<AssetService>(sp =>
 });
 builder.Services.AddScoped<UserService>(sp =>
 {
-    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("UserCreatorAPI");
     return new UserService(client);
 });
 builder.Services.AddScoped<CompanyService>(sp =>
