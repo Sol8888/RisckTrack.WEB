@@ -81,7 +81,7 @@
 
             Session.SetSession(result.UserId, result.CompanyId, result.Role);
 
-            if (result.Role == "S" && result.Role == "A")
+            if (result.Role == "S" || result.Role == "A")
                 Navigation.NavigateTo("/admin-welcome");
             else
                 Navigation.NavigateTo("/user-welcome");

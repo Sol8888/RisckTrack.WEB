@@ -9,38 +9,52 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 
-builder.Services.AddHttpClient("ApiLogin", client =>
+builder.Services.AddHttpClient("AuthApi", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7039/");
 });
 
-builder.Services.AddScoped<AuthService>(sp =>
+builder.Services.AddHttpClient("MainApi", client =>
 {
-    var factory = sp.GetRequiredService<IHttpClientFactory>();
-    var client = factory.CreateClient("ApiLogin");
-    return new AuthService(client);
-});
-
-builder.Services.AddScoped<TwoFactorService>(sp =>
-{
-    var factory = sp.GetRequiredService<IHttpClientFactory>();
-    var client = factory.CreateClient("ApiLogin");
-    return new TwoFactorService(client);
-});
-
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri("https://localhost:7220/")
+    client.BaseAddress = new Uri("https://localhost:7220/");
 });
 
 builder.Services.AddScoped<UserSessionService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<AssetService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<CompanyService>();
-builder.Services.AddScoped<IncidentService>();
-builder.Services.AddScoped<TeamService>();
-builder.Services.AddScoped<TwoFactorService>();
+builder.Services.AddScoped<AuthService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthApi");
+    return new AuthService(client);
+});
+builder.Services.AddScoped<AssetService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new AssetService(client);
+});
+builder.Services.AddScoped<UserService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new UserService(client);
+});
+builder.Services.AddScoped<CompanyService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new CompanyService(client);
+});
+builder.Services.AddScoped<IncidentService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new IncidentService(client);
+});
+builder.Services.AddScoped<TeamService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new TeamService(client);
+});
+builder.Services.AddScoped<TwoFactorService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthApi");
+    return new TwoFactorService(client);
+});
 
 var app = builder.Build();
 
