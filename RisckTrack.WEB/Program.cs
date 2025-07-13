@@ -1,24 +1,60 @@
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using RisckTrack.WEB.Components;
 using RisckTrack.WEB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddScoped<ProtectedSessionStorage>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped(sp => new HttpClient
+
+builder.Services.AddHttpClient("AuthApi", client =>
 {
-    BaseAddress = new Uri("http://localhost:8000/riskTracker") 
+    client.BaseAddress = new Uri("https://localhost:7039/");
+});
+
+builder.Services.AddHttpClient("MainApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7220/");
 });
 
 builder.Services.AddScoped<UserSessionService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<AssetService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<CompanyService>();
-builder.Services.AddScoped<IncidentService>();
-builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<AuthService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthApi");
+    return new AuthService(client);
+});
+builder.Services.AddScoped<AssetService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new AssetService(client);
+});
+builder.Services.AddScoped<UserService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new UserService(client);
+});
+builder.Services.AddScoped<CompanyService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new CompanyService(client);
+});
+builder.Services.AddScoped<IncidentService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new IncidentService(client);
+});
+builder.Services.AddScoped<TeamService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("MainApi");
+    return new TeamService(client);
+});
+builder.Services.AddScoped<TwoFactorService>(sp =>
+{
+    var client = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthApi");
+    return new TwoFactorService(client);
+});
 
 var app = builder.Build();
 
