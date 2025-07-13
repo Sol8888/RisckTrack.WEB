@@ -8,15 +8,16 @@ builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+var kongGatewayUrl = "http://localhost:8000/";
 
 builder.Services.AddHttpClient("AuthApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7039/");
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerLogin/");
 });
 
 builder.Services.AddHttpClient("MainApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7220/");
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerCalculations/");
 });
 
 builder.Services.AddScoped<UserSessionService>();
