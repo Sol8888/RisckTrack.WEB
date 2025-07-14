@@ -22,7 +22,7 @@ builder.Services.AddHttpClient("MainApi", client =>
 
 builder.Services.AddHttpClient("UserCreatorAPI", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7019/");
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerUCreations/");
 });
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddScoped<AuthService>(sp =>
