@@ -1,0 +1,89 @@
+﻿@rendermode InteractiveServer
+@using RisckTrack.WEB.Services
+@inject ChatbotService ChatService
+
+<div class="chatbot-widget">
+    @if (!isChatOpen)
+    {
+        <button class="chatbot-toggle-button" @onclick="ToggleChat">
+            <span>💬</span>
+        </button>
+    }
+
+    @if (isChatOpen)
+    {
+        <div class="chatbot-window">
+            <div class="chatbot-header">
+                <span>Asistente Virtual</span>
+                <button class="chatbot-close-button" @onclick="ToggleChat">×</button>
+            </div>
+            <div class="chatbot-messages">
+                @foreach (var message in messages)
+                {
+                    <div class="message @(message.IsBot ? "bot" : "user")">
+                        @message.Text
+                    </div>
+                }
+            </div>
+            <div class="chatbot-input">
+                <input type="text" @bind="currentMessage" @onkeydown="HandleKeyDown" placeholder="Escribe tu pregunta..." />
+                <button @onclick="SendMessageAsync">Enviar</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isChatOpen = false;
+    private string currentMessage = string.Empty;
+    private List<Message> messages = new List<Message>();
+
+    protected override void OnInitialized()
+    {
+        messages.Add(new Message("¡Hola! ¿Cómo puedo ayudarte hoy?", true));
+    }
+
+    private void ToggleChat()
+    {
+        isChatOpen = !isChatOpen;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessageAsync();
+        }
+    }
+
+    private async Task SendMessageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(currentMessage)) return;
+
+        var userMessage = currentMessage;
+        messages.Add(new Message(userMessage, false)); 
+        currentMessage = ""; // Limpia el input
+
+        messages.Add(new Message("...", true));
+        StateHasChanged(); 
+
+        var botResponse = await ChatService.GetAnswer(userMessage);
+
+        messages.RemoveAt(messages.Count - 1); 
+        messages.Add(new Message(botResponse, true)); 
+
+        StateHasChanged(); 
+    }
+
+    public class Message
+    {
+        public string Text { get; }
+        public bool IsBot { get; }
+
+        public Message(string text, bool isBot)
+        {
+            Text = text;
+            IsBot = isBot;
+        }
+    }
+}

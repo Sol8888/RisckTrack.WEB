@@ -4,13 +4,15 @@ using RisckTrack.WEB.Components;
 using RisckTrack.WEB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<ProtectedSessionStorage>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<ProtectedSessionStorage>();
+
 var kongGatewayUrl = "https://localhost:8443/";
 var handler = new HttpClientHandler();
+
 if (builder.Environment.IsDevelopment())
 {
     handler.ServerCertificateCustomValidationCallback =
@@ -33,6 +35,10 @@ builder.Services.AddHttpClient("MainApi", client =>
 builder.Services.AddHttpClient("UserCreatorAPI", client =>
 {
     client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerUCreations/");
+}).ConfigurePrimaryHttpMessageHandler(() => handler);
+
+builder.Services.AddHttpClient<ChatbotService>(client =>
+{
 }).ConfigurePrimaryHttpMessageHandler(() => handler);
 
 builder.Services.AddScoped<UserSessionService>();
