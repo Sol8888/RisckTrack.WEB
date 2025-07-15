@@ -1,3 +1,4 @@
+using java.util.logging;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using RisckTrack.WEB.Components;
 using RisckTrack.WEB.Services;
@@ -8,21 +9,32 @@ builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+var kongGatewayUrl = "https://localhost:8443/";
+var handler = new HttpClientHandler();
+if (builder.Environment.IsDevelopment())
+{
+    handler.ServerCertificateCustomValidationCallback =
+        (httpRequestMessage, cert, cetChain, policyErrors) =>
+        {
+            return true;
+        };
+}
 
 builder.Services.AddHttpClient("AuthApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7039/");
-});
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerLogin/");
+}).ConfigurePrimaryHttpMessageHandler(() => handler);
 
 builder.Services.AddHttpClient("MainApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7220/");
-});
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerCalculations/");
+}).ConfigurePrimaryHttpMessageHandler(() => handler);
 
 builder.Services.AddHttpClient("UserCreatorAPI", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7019/");
-});
+    client.BaseAddress = new Uri($"{kongGatewayUrl}riskTrackerUCreations/");
+}).ConfigurePrimaryHttpMessageHandler(() => handler);
+
 builder.Services.AddScoped<UserSessionService>();
 builder.Services.AddScoped<AuthService>(sp =>
 {
@@ -70,7 +82,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
